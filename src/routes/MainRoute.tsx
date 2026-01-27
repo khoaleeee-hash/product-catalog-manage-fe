@@ -7,30 +7,35 @@ import CategoryPage from "../pages/admin/CategoryPage";
 import ProductPage from "../pages/admin/ProductPage";
 import ProtectedRoute from "../auth/ProtectedRoute"; // ← Đổi tên cho đúng
 import LoginPage from "../pages/LoginPage";
+import ProductDetailPage from "../pages/product/productDetailPage";
 
 const MainRoute: React.FC = () => {
     return (
         <BrowserRouter>
-            <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
+    <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
 
-                {/* User routes */}
-                <Route element={<UserRoute />}>
-                    <Route path="/home" element={<HomePage />} />
-                </Route>
+        {/* 🔥 PRODUCT DETAIL */}
+        <Route path="/products/:id" element={<ProductDetailPage />} />
 
-                {/* Admin routes */}
-                <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
-                    <Route path="/admin" element={<AdminRoute />}>
-                        <Route index element={<Navigate to="/admin/category" replace />} />
-                        <Route path="category" element={<CategoryPage />} />
-                        <Route path="product" element={<ProductPage />} />
-                    </Route>
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        {/* User routes */}
+        <Route element={<UserRoute />}>
+            <Route path="/home" element={<HomePage />} />
+        </Route>
+
+        {/* Admin routes */}
+        <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
+            <Route path="/admin" element={<AdminRoute />}>
+                <Route index element={<Navigate to="/admin/category" replace />} />
+                <Route path="category" element={<CategoryPage />} />
+                <Route path="product" element={<ProductPage />} />
+            </Route>
+        </Route>
+    </Routes>
+</BrowserRouter>
+
     );
 };
 

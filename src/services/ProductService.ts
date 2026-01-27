@@ -14,3 +14,9 @@ export const deleteProduct = async (productId: number): Promise<void> => {
   );
 };
 
+export const getProductById = async (id: number): Promise<Product | null> => 
+{
+  const res = await axios.get<ApiResponse<Product>>(`/api/products/${id}`);
+  return res.data.payload ?? null;
+};
+

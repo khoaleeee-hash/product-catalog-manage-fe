@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductCardProps {
     id: number;
@@ -9,22 +10,32 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+    id,
     name,
     description,
     price,
     image
 }) => {
     const [isAdding, setIsAdding] = useState(false);
+    const navigate = useNavigate();
 
     const handleAddToCart = () => {
         setIsAdding(true);
         setTimeout(() => setIsAdding(false), 600);
     };
 
+    const goToDetail = () => {
+        navigate(`/products/${id}`);
+    };
+
     return (
         <div className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full relative group border border-transparent hover:border-fpt-orange/20">
             
-            <div className="h-48 overflow-hidden relative bg-gray-100">
+            {/* IMAGE */}
+            <div
+                className="h-48 overflow-hidden relative bg-gray-100 cursor-pointer"
+                onClick={goToDetail}
+            >
                 <img
                     src={image}
                     alt={name}
@@ -35,7 +46,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
 
             <div className="p-5 flex flex-col flex-1">
-                <h4 className="font-bold text-gray-800 text-lg mb-2 group-hover:text-fpt-blue transition-colors cursor-pointer line-clamp-1">
+                {/* NAME */}
+                <h4
+                    onClick={goToDetail}
+                    className="font-bold text-gray-800 text-lg mb-2 group-hover:text-fpt-blue transition-colors cursor-pointer line-clamp-1"
+                >
                     {name}
                 </h4>
 
@@ -48,6 +63,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                         {price.toLocaleString('vi-VN')}đ
                     </span>
 
+                    {/* ADD TO CART */}
                     <button
                         onClick={handleAddToCart}
                         disabled={isAdding}
