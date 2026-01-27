@@ -5,18 +5,16 @@ import AdminRoute from "./AdminRoute";
 import HomePage from "../pages/home/HomePage";
 import CategoryPage from "../pages/admin/CategoryPage";
 import ProductPage from "../pages/admin/ProductPage";
-import ProctedRouted from "../auth/ProtectedRoute";
+import ProtectedRoute from "../auth/ProtectedRoute"; // ← Đổi tên cho đúng
 import LoginPage from "../pages/LoginPage";
 
 const MainRoute: React.FC = () => {
     return (
         <BrowserRouter>
             <Routes>
-                {/* Login route */}
+                {/* Public routes */}
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
-
-                {/* Redirect root to admin category */}
-                <Route path="/" element={<Navigate to="/admin/category" replace />} />
 
                 {/* User routes */}
                 <Route element={<UserRoute />}>
@@ -24,7 +22,7 @@ const MainRoute: React.FC = () => {
                 </Route>
 
                 {/* Admin routes */}
-                <Route element={<ProctedRouted role={["admin"]} />}>
+                <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
                     <Route path="/admin" element={<AdminRoute />}>
                         <Route index element={<Navigate to="/admin/category" replace />} />
                         <Route path="category" element={<CategoryPage />} />

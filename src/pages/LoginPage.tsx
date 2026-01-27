@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import FPTLogo from '../assets/fpt_logo.png';
+import userService from '../services/userService';
+import { type DecodedToken, type UserResponse } from '../types/User';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +11,7 @@ const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const togglePassword = () => {
@@ -17,18 +21,50 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
 
     try {
-      // TODO: Implement login API call here
-      console.log('Login attempt:', { email, password, rememberMe });
+      const response: UserResponse = await userService.login(email, password);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Login response:', response);
+      console.log('oken:', response.token);
+      console.log('Role from response:', response.role);
+      console.log('Full name:', response.fullName);
+      console.log('User ID:', response.id);
       
-      // After successful login, navigate to home or admin page
-      navigate('/');
-    } catch (error) {
+      // Decode token để lấy email
+      const decodedToken = jwtDecode<DecodedToken>(response.token);
+      console.log('Decoded token:', decodedToken);
+      console.log('Email from token:', decodedToken.sub);
+      
+      // Normalize role to lowercase
+      const normalizedRole = response.role.toLowerCase() as 'user' | 'admin';
+      
+      console.log('Normalized role:', normalizedRole);
+      
+      // Lưu token và user info
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify({
+        email: decodedToken.sub,
+        role: normalizedRole,
+        fullName: response.fullName,
+        id: response.id
+      }));
+      
+      console.log('Saved to localStorage');
+      
+      // Navigate dựa vào role
+      if (normalizedRole === 'admin') {
+        console.log('Navigating to ADMIN dashboard');
+        navigate('/admin/category');
+      } else {
+        console.log('Navigating to HOME page');
+        navigate('/');
+      }
+      
+    } catch (error: any) {
       console.error('Login failed:', error);
+      setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
     }
@@ -45,6 +81,13 @@ const LoginPage: React.FC = () => {
             FPT Store
           </h1>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            <i className="fa-solid fa-circle-exclamation mr-2"></i>
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
