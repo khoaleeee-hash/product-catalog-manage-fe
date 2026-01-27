@@ -3,11 +3,15 @@ import type { Product } from '../../types/Product';
 import { getProducts, deleteProduct } from '../../services/ProductService';
 import ProductTable from '../../components/product/ProductTable';
 import EmptyState from '../../components/product/EmptyState';
+import { useNavigate } from "react-router-dom";
+
 
 const ProductPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     fetchProducts();
@@ -73,7 +77,10 @@ const ProductPage: React.FC = () => {
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
 
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+          <button
+            onClick={() => navigate("/admin/products/createProduct")}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
             Add Product
           </button>
 

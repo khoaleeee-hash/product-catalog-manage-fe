@@ -8,6 +8,7 @@ import ProductPage from "../pages/admin/ProductPage";
 import ProtectedRoute from "../auth/ProtectedRoute"; // ← Đổi tên cho đúng
 import LoginPage from "../pages/LoginPage";
 import ProductDetailPage from "../pages/product/productDetailPage";
+import CreateProductPage from "../pages/admin/CreateProductPage";
 
 const MainRoute: React.FC = () => {
     return (
@@ -17,7 +18,7 @@ const MainRoute: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
 
-        {/* 🔥 PRODUCT DETAIL */}
+        {/* PRODUCT DETAIL */}
         <Route path="/products/:id" element={<ProductDetailPage />} />
 
         {/* User routes */}
@@ -31,6 +32,7 @@ const MainRoute: React.FC = () => {
                 <Route index element={<Navigate to="/admin/category" replace />} />
                 <Route path="category" element={<CategoryPage />} />
                 <Route path="product" element={<ProductPage />} />
+                <Route path="products/createProduct" element={<CreateProductPage />} />
             </Route>
         </Route>
     </Routes>

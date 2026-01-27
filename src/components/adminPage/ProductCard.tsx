@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { resolveImageUrl } from "../../utils/image";
 
 interface ProductCardProps {
     id: number;
@@ -28,6 +29,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         navigate(`/products/${id}`);
     };
 
+    console.log("IMAGE:", image);
+    console.log("RESOLVED:", resolveImageUrl(image));
+
     return (
         <div className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full relative group border border-transparent hover:border-fpt-orange/20">
             
@@ -37,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 onClick={goToDetail}
             >
                 <img
-                    src={image}
+                    src={resolveImageUrl(image)}
                     alt={name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
