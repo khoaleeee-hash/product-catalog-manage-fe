@@ -33,9 +33,7 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  <T>(response: AxiosResponse<ApiResponse<T>>): AxiosResponse<T> => {
-    return response as AxiosResponse<T>;
-  },
+  (response) => response,
   (error) => {
     // Enhanced error logging
     if (error.response) {

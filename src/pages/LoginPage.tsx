@@ -27,7 +27,7 @@ const LoginPage: React.FC = () => {
       const response: UserResponse = await userService.login(email, password);
       
       console.log('Login response:', response);
-      console.log('oken:', response.token);
+      console.log('token:', response.token);
       console.log('Role from response:', response.role);
       console.log('Full name:', response.fullName);
       console.log('User ID:', response.id);

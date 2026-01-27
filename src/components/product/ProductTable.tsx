@@ -3,7 +3,7 @@ import type { Product } from "../../types/Product";
 
 interface Props {
     products: Product[];
-    onDelete: (productId: string) => void;
+    onDelete: (productId: number) => void;
 }
 
 const ProductTable: React.FC<Props> = ({ products, onDelete }) => {
