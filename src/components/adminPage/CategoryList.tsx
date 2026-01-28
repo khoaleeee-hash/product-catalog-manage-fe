@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import CategoryService from '../../services/CategoryService';
 import type { GetCategoryResponse } from '../../types/Category';
 
-
 interface CategoryListProps {
     onSelectCategory: (categoryId: number) => void;
 }
@@ -17,25 +16,22 @@ const CategoryList: React.FC<CategoryListProps> = ({ onSelectCategory }) => {
     }, []);
 
     const fetchCategories = async () => {
-  try {
-    setLoading(true);
-    const response = await CategoryService.getCategories();
+        try {
+            setLoading(true);
+            const response = await CategoryService.getCategories();
 
-    console.log("FULL RESPONSE:", response.data);
-
-    if (response.data.payload) {
-      setCategories(response.data.payload);
-    } else {
-      setError("Không thể tải danh mục");
-    }
-  } catch (err) {
-    console.error(err);
-    setError("Lỗi khi tải danh mục");
-  } finally {
-    setLoading(false);
-  }
-};
-
+            if (response.data.payload) {
+                setCategories(response.data.payload);
+            } else {
+                setError('Không thể tải danh mục');
+            }
+        } catch (err) {
+            console.error(err);
+            setError('Lỗi khi tải danh mục');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -63,56 +59,50 @@ const CategoryList: React.FC<CategoryListProps> = ({ onSelectCategory }) => {
                 <h3 className="text-2xl font-bold text-fpt-blue border-l-4 border-fpt-orange pl-3">
                     Danh mục sản phẩm
                 </h3>
-                {/* <a href="#" className="text-sm font-semibold text-fpt-orange hover:underline hidden md:flex items-center space-x-1">
-                    <span>Xem tất cả</span>
-                    <i className="fa-solid fa-chevron-right text-xs"></i>
-                </a> */}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {categories.map((category, index) => (
+                {/* Tất cả */}
+                <div
+                    onClick={() => onSelectCategory(0)}
+                    className="bg-white p-5 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer text-center group"
+                >
+                    <div className="w-12 h-12 mx-auto mb-3 bg-fpt-orange rounded-full flex items-center justify-center">
+                        <i className="fa-solid fa-layer-group text-xl text-white"></i>
+                    </div>
+                    <span className="font-semibold text-gray-700 text-sm">
+                        Tất cả
+                    </span>
+                </div>
+
+                {/* Danh mục */}
+                {categories.map((category) => (
                     <div
                         key={category.categoryId}
                         onClick={() => onSelectCategory(category.categoryId)}
-                        className="bg-white p-5 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer text-center group border border-transparent hover:border-fpt-orange relative overflow-hidden"
+                        className="bg-white p-5 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 cursor-pointer text-center group"
                     >
-                    <div
-                        onClick={() => onSelectCategory?.(0)}
-                        className="cursor-pointer font-semibold text-fpt-orange"
-                        >
-                        Tất cả
-                    </div>
-                        <div className="absolute inset-0 bg-gradient-to-br from-fpt-orange/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        
-                        <div className="relative z-10">
-                            <div className="w-12 h-12 mx-auto mb-3 bg-fpt-orange/10 group-hover:bg-fpt-orange rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110">
-                                <i className="fa-solid fa-layer-group text-xl text-fpt-orange group-hover:text-white transition-colors"></i>
-                            </div>
-                            
-                            {category.imageUrl && (
-                                <div className="w-full aspect-video rounded-xl overflow-hidden mb-3 shadow-sm">
-                                    <img
-                                        src={category.imageUrl}
-                                        alt={category.categoryName}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                            // Fallback image nếu load lỗi
-                                            e.currentTarget.src = 'https://via.placeholder.com/300x200?text=No+Image';
-                                        }}
-                                    />
-                                </div>
-                            )}
-                            
-                            <span className="font-semibold text-gray-700 group-hover:text-fpt-orange transition-colors text-sm">
-                                {category.categoryName}
-                            </span>
+                        <div className="w-12 h-12 mx-auto mb-3 bg-fpt-orange rounded-full flex items-center justify-center">
+                            <i className="fa-solid fa-layer-group text-xl text-white"></i>
                         </div>
+
+                        {category.imageUrl && (
+                            <img
+                                src={category.imageUrl}
+                                alt={category.categoryName}
+                                className="w-full h-24 object-cover rounded-xl mb-3"
+                                loading="lazy"
+                            />
+                        )}
+
+                        <span className="font-semibold text-gray-700 text-sm">
+                            {category.categoryName}
+                        </span>
                     </div>
                 ))}
             </div>
 
-            {categories.length === 0 && !loading && !error && (
+            {categories.length === 0 && (
                 <div className="text-center py-10 text-gray-500">
                     Không có danh mục nào
                 </div>
