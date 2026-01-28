@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FPTLogo from '../assets/fpt_logo.png';
-import UserService from '../services/UserService';
+import userService from '../services/userService'; // ✅ Fix: lowercase 'u'
 import type { RegisterRequest } from '../types/User';
+import { toast } from 'react-toastify';
 
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const RegisterPage: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // ✅ State name is 'loading'
     const [error, setError] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,8 +41,14 @@ const RegisterPage: React.FC = () => {
         setError('');
 
         // Validation
-        if (formData.password !== confirmPassword) {
-            setError('Mật khẩu xác nhận không khớp');
+        if (!formData.fullName.trim()) {
+            setError('Vui lòng nhập họ tên');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            setError('Email không hợp lệ');
             return;
         }
 
@@ -50,21 +57,81 @@ const RegisterPage: React.FC = () => {
             return;
         }
 
-        try {
-            setLoading(true);
-            const response = await UserService.register(formData);
+        if (formData.password !== confirmPassword) {
+            setError('Mật khẩu không khớp');
+            return;
+        }
 
-            if (response.data.success) {
-                alert('Đăng ký thành công! Vui lòng đăng nhập.');
-                navigate('/login');
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+            setError('Số điện thoại phải có 10 chữ số');
+            return;
+        }
+
+        if (!formData.address.trim()) {
+            setError('Vui lòng nhập địa chỉ');
+            return;
+        }
+
+        setLoading(true); // ✅ Fix: Use setLoading instead of setIsLoading
+
+        try {
+            const registerData: RegisterRequest = {
+                fullName: formData.fullName.trim(),
+                email: formData.email.trim(),
+                password: formData.password,
+                phone: formData.phone.trim(),
+                address: formData.address.trim(),
+            };
+
+            console.log('Sending register data:', registerData);
+
+            const response = await userService.register(registerData);
+
+            console.log('Full response:', response);
+            console.log('Response data:', response.data);
+            console.log('Response status:', response.data.status);
+            console.log('Response payload:', response.data.payload);
+
+            // ✅ Kiểm tra status === "SUCCESS"
+            if (response.data.status === "SUCCESS" && response.data.payload) {
+                toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
+                
+                // Clear form
+                setFormData({
+                    fullName: '',
+                    phone: '',
+                    address: '',
+                    email: '',
+                    password: ''
+                });
+                setConfirmPassword('');
+                
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1500);
             } else {
-                setError(response.data.message || 'Đăng ký thất bại');
+                const errorMsg = response.data.error?.details || 'Đăng ký thất bại';
+                setError(errorMsg);
+                toast.error(errorMsg);
             }
-        } catch (err: any) {
-            console.error('Register error:', err);
-            setError(err.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
+        } catch (error: any) {
+            console.error('Register error:', error);
+            
+            let errorMsg = 'Đăng ký thất bại. Vui lòng thử lại!';
+            
+            if (error.response?.data?.error?.details) {
+                errorMsg = error.response.data.error.details;
+            } else if (error.response?.data?.message) {
+                errorMsg = error.response.data.message;
+            } else if (error.message) {
+                errorMsg = error.message;
+            }
+            
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
-            setLoading(false);
+            setLoading(false); // ✅ Fix: Use setLoading
         }
     };
 
@@ -103,7 +170,7 @@ const RegisterPage: React.FC = () => {
                                 <input
                                     type="text"
                                     name="fullName"
-                                    placeholder="* Nhập họ và tên"
+                                    placeholder="Nhập họ và tên"
                                     value={formData.fullName}
                                     onChange={handleChange}
                                     required
@@ -124,7 +191,7 @@ const RegisterPage: React.FC = () => {
                                 <input
                                     type="email"
                                     name="email"
-                                    placeholder="* Địa chỉ email"
+                                    placeholder="Địa chỉ email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
@@ -148,7 +215,7 @@ const RegisterPage: React.FC = () => {
                                 <input
                                     type="tel"
                                     name="phone"
-                                    placeholder="* Số điện thoại"
+                                    placeholder="Số điện thoại (10 số)"
                                     value={formData.phone}
                                     onChange={handleChange}
                                     required
@@ -169,7 +236,7 @@ const RegisterPage: React.FC = () => {
                                 <input
                                     type="text"
                                     name="address"
-                                    placeholder="* Nhập địa chỉ"
+                                    placeholder="Nhập địa chỉ"
                                     value={formData.address}
                                     onChange={handleChange}
                                     required
@@ -193,7 +260,7 @@ const RegisterPage: React.FC = () => {
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
-                                    placeholder="* Mật khẩu (6+ ký tự)"
+                                    placeholder="Mật khẩu (6+ ký tự)"
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
@@ -221,7 +288,7 @@ const RegisterPage: React.FC = () => {
                                 </span>
                                 <input
                                     type={showConfirmPassword ? 'text' : 'password'}
-                                    placeholder="* Nhập lại mật khẩu"
+                                    placeholder="Nhập lại mật khẩu"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required

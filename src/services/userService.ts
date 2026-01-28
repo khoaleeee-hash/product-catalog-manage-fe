@@ -1,6 +1,7 @@
 import { type RegisterRequest, type RegisterResponse, type UserResponse } from "../types/User";
-import axios, { Axios, type AxiosResponse } from "axios";
-
+import axios, { type AxiosResponse } from "axios";
+import { apiUtils } from "../api/axios"; 
+import type { ApiResponse } from "../types/ApiResponse"; 
 const USER_URL = "http://localhost:8080/api/user";
 
 const userService = {
@@ -52,6 +53,7 @@ const userService = {
             throw new Error(errorMessage);
         }
     },
+    
     async register(data: RegisterRequest): Promise<AxiosResponse<ApiResponse<RegisterResponse>>> {
         console.log("API Call: register", data);
         const response = await apiUtils.post<ApiResponse<RegisterResponse>>(
@@ -62,6 +64,5 @@ const userService = {
         return response;
     },
 };
-
 
 export default userService;

@@ -1,14 +1,12 @@
-import type { is } from "date-fns/locale";
-
 export interface User{
     email:string;
     password:string;
-    role: 'user' | 'admin' | 'USER' | 'ADMIN'; 
+    role: 'customer' | 'admin' | 'CUSTOMER' | 'ADMIN'; 
 }
 
 export interface UserResponse{
     token: string;
-    role: 'user' | 'admin' | 'USER' | 'ADMIN'; // ← Thêm role
+    role: 'customer' | 'admin' | 'CUSTOMER' | 'ADMIN'; // ← Thêm role
     id: number; // ← Thêm id
     fullName: string; // ← Thêm fullName
 }
@@ -19,7 +17,7 @@ export interface LoginRequest{
 }
 
 export interface DecodedToken{
-    sub: string; // ← Email nằm trong "sub"
+    sub: string; 
     iat: number;
     exp: number;
 }
@@ -33,11 +31,21 @@ export interface RegisterRequest{
 }
 
 export interface RegisterResponse {
-    userId: number;
+    id: number;
     fullName: string;
     phone: string;
     address: string;
     email: string;
-    role: 'user' | 'admin' | 'USER' | 'ADMIN';
+    role: 'customer' | 'admin' | 'CUSTOMER' | 'ADMIN';
+    isActive: boolean;
+}
+
+export interface getUserProfileResponse {
+    id: number;
+    fullName: string;
+    phone: string;
+    address: string;
+    email: string;
+    role: 'customer' | 'admin' | 'CUSTOMER' | 'ADMIN';
     isActive: boolean;
 }
