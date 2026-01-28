@@ -280,7 +280,7 @@ const ProductPage: React.FC = () => {
                 setSearchTerm("");
                 setStatusFilter("all");
               }}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-orange-600 hover:text-orange-700 font-medium"
             >
               Xóa bộ lọc
             </button>
