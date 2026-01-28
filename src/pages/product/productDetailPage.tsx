@@ -70,7 +70,13 @@ const ProductDetailPage = () => {
           </div>
 
           <div className="action-buttons">
-            <button className="btn btn-primary"> Thêm vào giỏ hàng</button>
+            {product.stockQuantity > 0 ? (
+              <button className="btn btn-primary"> Thêm vào giỏ hàng</button>
+            ) : (
+              <div className="text-center py-4 px-6 bg-red-100 border-2 border-red-400 rounded-lg">
+                <p className="text-red-600 font-bold text-lg">Out of stock</p>
+              </div>
+            )}
             {/* <button className="btn btn-secondary"> Yêu thích</button> */}
           </div>
         </div>

@@ -100,8 +100,8 @@ const ProductPage: React.FC = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "instock" && product.stock > 0) ||
-      (statusFilter === "outofstock" && product.stock === 0);
+      (statusFilter === "instock" && product.stockQuantity > 0) ||
+      (statusFilter === "outofstock" && product.stockQuantity === 0);
     return matchesSearch && matchesStatus;
   });
 
@@ -145,7 +145,7 @@ const ProductPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      await deleteProduct(selectedProduct.id);
+      await deleteProduct(selectedProduct.id!);
       toast.success("Xóa sản phẩm thành công!");
       
       setProducts((prevProducts) =>
@@ -364,11 +364,11 @@ const ProductPage: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.stock > 0 
+                        product.stockQuantity > 0 
                           ? 'bg-green-100 text-green-700' 
                           : 'bg-red-100 text-red-700'
                       }`}>
-                        {product.stock > 0 ? `Còn ${product.stock}` : 'Hết hàng'}
+                        {product.stockQuantity > 0 ? `Còn ${product.stockQuantity}` : 'Hết hàng'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -387,7 +387,7 @@ const ProductPage: React.FC = () => {
                               label: "Chỉnh sửa",
                               icon: Edit,
                               onClick: () => {
-                                navigate(`/admin/products/edit/${product.id}`);
+                                navigate(`/admin/products/${product.id}`);
                               },
                             },
                             {
@@ -513,7 +513,7 @@ const ProductPage: React.FC = () => {
                     Tồn kho
                   </p>
                   <p className="text-2xl font-bold text-purple-900">
-                    {selectedProduct.stock}
+                    {selectedProduct.stockQuantity}
                   </p>
                 </div>
               </div>
@@ -533,7 +533,7 @@ const ProductPage: React.FC = () => {
                 <button
                   onClick={() => {
                     setShowDetailModal(false);
-                    navigate(`/admin/products/edit/${selectedProduct.id}`);
+                    navigate(`/admin/products/${selectedProduct.id}`);
                   }}
                   className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl font-semibold"
                 >

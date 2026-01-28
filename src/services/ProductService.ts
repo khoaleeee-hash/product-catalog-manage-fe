@@ -44,3 +44,21 @@ export const createProduct = async (
 
   return res.data.payload;
 };
+
+export const updateProduct = async (
+  id: number,
+  formData: FormData
+): Promise<Product> => {
+  const res = await axios.put<ApiResponse<Product>>(
+    `/api/products/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    }
+  );
+
+  return res.data.payload;
+};
+

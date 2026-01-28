@@ -8,6 +8,7 @@ interface ProductCardProps {
     description: string;
     price: number;
     image: string;
+    stockQuantity: number;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -15,7 +16,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     name,
     description,
     price,
-    image
+    image,
+    stockQuantity
 }) => {
     const [isAdding, setIsAdding] = useState(false);
     const navigate = useNavigate();
@@ -29,8 +31,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         navigate(`/products/${id}`);
     };
 
-    console.log("IMAGE:", image);
-    console.log("RESOLVED:", resolveImageUrl(image));
 
     return (
         <div className="bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col h-full relative group border border-transparent hover:border-fpt-orange/20">
@@ -62,21 +62,33 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     {description}
                 </p>
 
-                <div className="mt-auto flex items-center justify-between">
-                    <span className="text-fpt-orange font-bold text-xl">
-                        {price.toLocaleString('vi-VN')}đ
-                    </span>
+                <div className="mt-auto">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-fpt-orange font-bold text-xl">
+                            {price.toLocaleString('vi-VN')}đ
+                        </span>
 
-                    {/* ADD TO CART */}
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={isAdding}
-                        className={`w-10 h-10 rounded-full bg-blue-50 text-fpt-blue hover:bg-fpt-orange hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-90 disabled:opacity-50 ${
-                            isAdding ? 'animate-bounce bg-fpt-orange text-white' : ''
-                        }`}
-                    >
-                        <i className="fa-solid fa-plus"></i>
-                    </button>
+                        {/* ADD TO CART */}
+                        {stockQuantity > 0 && (
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={isAdding}
+                                className={`w-10 h-10 rounded-full bg-blue-50 text-fpt-blue hover:bg-fpt-orange hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 hover:rotate-90 disabled:opacity-50 ${
+                                    isAdding ? 'animate-bounce bg-fpt-orange text-white' : ''
+                                }`}
+                                title="Thêm vào giỏ hàng"
+                            >
+                                <i className="fa-solid fa-plus"></i>
+                            </button>
+                        )}
+                    </div>
+                    
+                    {/* OUT OF STOCK */}
+                    {stockQuantity === 0 && (
+                        <div className="text-red-500 font-semibold text-sm text-center py-2">
+                            Out of stock
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

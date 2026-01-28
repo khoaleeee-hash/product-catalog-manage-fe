@@ -9,6 +9,7 @@ import ProtectedRoute from "../auth/ProtectedRoute"; // ← Đổi tên cho đú
 import LoginPage from "../pages/LoginPage";
 import ProductDetailPage from "../pages/product/productDetailPage";
 import CreateProductPage from "../pages/admin/CreateProductPage";
+import UpdateProductPage from "../pages/admin/UpdateProductPage";
 import RegisterPage from "../pages/RegisterPage";
 
 const MainRoute: React.FC = () => {
@@ -28,17 +29,19 @@ const MainRoute: React.FC = () => {
                     <Route path="/home" element={<HomePage />} />
                 </Route>
 
-                {/* Admin routes */}
-                <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
-                    <Route path="/admin" element={<AdminRoute />}>
-                        <Route index element={<Navigate to="/admin/category" replace />} />
-                        <Route path="category" element={<CategoryPage />} />
-                        <Route path="product" element={<ProductPage />} />
-                        <Route path="products/createProduct" element={<CreateProductPage />} />
-                    </Route>
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        {/* Admin routes */}
+        <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
+            <Route path="/admin" element={<AdminRoute />}>
+                <Route index element={<Navigate to="/admin/category" replace />} />
+                <Route path="category" element={<CategoryPage />} />
+                <Route path="product" element={<ProductPage />} />
+                <Route path="products/createProduct" element={<CreateProductPage />} />
+                <Route path="products/:id" element={<UpdateProductPage />} />
+            </Route>
+        </Route>
+    </Routes>
+</BrowserRouter>
+
     );
 };
 

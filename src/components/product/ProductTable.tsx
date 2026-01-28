@@ -4,9 +4,10 @@ import type { Product } from "../../types/Product";
 interface Props {
     products: Product[];
     onDelete: (productId: number) => void;
+    onUpdate: (productId: number) => void;
 }
 
-const ProductTable: React.FC<Props> = ({ products, onDelete }) => {
+const ProductTable: React.FC<Props> = ({ products, onDelete, onUpdate }) => {
     return (
         <div className="bg-white rounded">
             <table className="w-full">
@@ -45,6 +46,12 @@ const ProductTable: React.FC<Props> = ({ products, onDelete }) => {
                                 onClick={()=> onDelete(p.id)}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                                     Delete
+                                </button>
+
+                                <button
+                                onClick={() => onUpdate(p.id)}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                    Update
                                 </button>
                             </td>
 

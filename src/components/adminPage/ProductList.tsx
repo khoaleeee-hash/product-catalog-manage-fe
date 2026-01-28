@@ -18,7 +18,7 @@ const ProductList: React.FC = () => {
     if (loading) {
         return (
             <div className="text-center py-10 text-gray-500">
-                Đang tải sản phẩm...
+                Loading...
             </div>
         );
     }
@@ -47,7 +47,8 @@ const ProductList: React.FC = () => {
                         name={product.name}
                         description={product.description}
                         price={product.price}
-                        image={product.imageUrl} 
+                        image={product.imageUrl}
+                        stockQuantity={product.stockQuantity}
                     />
                 ))}
             </div>
