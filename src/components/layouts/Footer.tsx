@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-fpt-blue text-white mt-20">
+        <footer className="from-orange-600 to-orange-700 bg-gradient-to-r text-white mt-20">
             <div className="container mx-auto px-4 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* Brand */}
@@ -35,11 +35,11 @@ const Footer: React.FC = () => {
                     <div>
                         <h3 className="text-lg font-bold mb-4">Danh mục</h3>
                         <ul className="space-y-2 text-sm opacity-80">
-                            <li><a href="#" className="hover:text-fpt-orange transition">Cơm trưa</a></li>
-                            <li><a href="#" className="hover:text-fpt-orange transition">Đồ uống</a></li>
-                            <li><a href="#" className="hover:text-fpt-orange transition">Merchandise</a></li>
-                            <li><a href="#" className="hover:text-fpt-orange transition">Healthy Food</a></li>
-                            <li><a href="#" className="hover:text-fpt-orange transition">Văn phòng phẩm</a></li>
+                            <li><a href="#" className="hover:text-fpt-orange transition">Sách</a></li>
+                            <li><a href="#" className="hover:text-fpt-orange transition">Đồ điện tử</a></li>
+                            <li><a href="#" className="hover:text-fpt-orange transition">Thời trang</a></li>
+                            <li><a href="#" className="hover:text-fpt-orange transition">Đồ gia dụng</a></li>
+                            <li><a href="#" className="hover:text-fpt-orange transition">Thể thao</a></li>
                         </ul>
                     </div>
 

@@ -10,22 +10,24 @@ import LoginPage from "../pages/LoginPage";
 import ProductDetailPage from "../pages/product/productDetailPage";
 import CreateProductPage from "../pages/admin/CreateProductPage";
 import UpdateProductPage from "../pages/admin/UpdateProductPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const MainRoute: React.FC = () => {
     return (
         <BrowserRouter>
-    <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+            <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-        {/* PRODUCT DETAIL */}
-        <Route path="/products/:id" element={<ProductDetailPage />} />
+                {/* PRODUCT DETAIL */}
+                <Route path="/products/:id" element={<ProductDetailPage />} />
 
-        {/* User routes */}
-        <Route element={<UserRoute />}>
-            <Route path="/home" element={<HomePage />} />
-        </Route>
+                {/* User routes */}
+                <Route element={<UserRoute />}>
+                    <Route path="/home" element={<HomePage />} />
+                </Route>
 
         {/* Admin routes */}
         <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>

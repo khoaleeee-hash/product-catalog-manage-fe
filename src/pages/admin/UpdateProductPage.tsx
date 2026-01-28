@@ -79,7 +79,7 @@ const ProductEditPage = () => {
     try {
       await updateProduct(Number(id), formData);
       alert("Update successful!");
-      navigate("/admin/product");
+      navigate("/admin/products/edit/" + id);
     } catch (error) {
       console.error(error);
       alert("Update failed!");

@@ -1,9 +1,22 @@
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/layouts/Sidebar";
 import type { MainLayoutProps } from "../types/MainLayoutProps.tsx";
 
 const AdminLayout = ({ children }: MainLayoutProps) => {
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Xóa token và thông tin user khỏi localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('user');
+    
+    // Điều hướng về trang HomePage
+    navigate('/', { replace: true });
+  };
+
+  return (   
+
       <div className="flex flex-1">
         <Sidebar userRole="admin" />
         <main className="flex-1 overflow-y-auto">
@@ -12,7 +25,6 @@ const AdminLayout = ({ children }: MainLayoutProps) => {
           </div>
         </main>
       </div>
-    </div>
   );
 };
 
