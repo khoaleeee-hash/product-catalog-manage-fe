@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserFromToken } from '../../utils/auth';
+import { CircleUserRound, LogOut, UserPlus, LogIn, MapPin, ShoppingBag } from 'lucide-react';
 
 const Header: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const [cartCount] = useState(3);
     const [user, setUser] = useState<{ email: string; role: 'user' | 'admin' } | null>(null);
     const navigate = useNavigate();
@@ -11,7 +13,7 @@ const Header: React.FC = () => {
     useEffect(() => {
         try {
             const userInfo = getUserFromToken();
-            console.log('User info from token:', userInfo); // Debug
+            console.log('User info from token:', userInfo);
             setUser(userInfo);
         } catch (error) {
             console.error('Error getting user from token:', error);
@@ -31,6 +33,10 @@ const Header: React.FC = () => {
         navigate('/login');
     };
 
+    const handleRegister = () => {
+        navigate('/register');
+    };
+
     const handleProfile = () => {
         if (user?.role === 'admin') {
             navigate('/admin/category');
@@ -39,8 +45,29 @@ const Header: React.FC = () => {
         }
     };
 
+    const handleOrderHistory = () => {
+        navigate('/orders');
+    };
+
+    const handleMyLocations = () => {
+        navigate('/locations');
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            // Navigate đến trang search với query parameter
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            setSearchQuery(''); // Clear search input
+        }
+    };
+
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+    };
+
     return (
-        <header className="bg-fpt-blue sticky top-0 z-50 shadow-lg backdrop-blur-sm bg-opacity-95 w-full">
+        <header className="from-orange-600 to-orange-700 bg-gradient-to-r sticky top-0 z-50 shadow-lg backdrop-blur-sm bg-opacity-95 w-full">
             <div className="max-w-screen-2xl mx-auto px-4 md:px-8 lg:px-12 h-16 flex items-center justify-between">
                 {/* Logo */}
                 <div 
@@ -64,14 +91,21 @@ const Header: React.FC = () => {
                 </div>
 
                 {/* Search Bar - Desktop */}
-                <div className="hidden md:flex flex-1 max-w-lg mx-8 relative">
+                <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-8 relative">
                     <input
                         type="text"
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
                         placeholder="Tìm kiếm sản phẩm..."
                         className="w-full pl-10 pr-4 py-2.5 rounded-full bg-white border-none outline-none focus:ring-2 focus:ring-fpt-orange transition-all text-sm shadow-sm"
                     />
-                    <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
-                </div>
+                    <button
+                        type="submit"
+                        className="absolute left-3.5 top-3 text-gray-400 hover:text-fpt-orange transition-colors"
+                    >
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
 
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center space-x-6 text-white">
@@ -88,66 +122,102 @@ const Header: React.FC = () => {
                         )}
                     </div>
                     
-                    {/* User Menu */}
-                    {user ? (
-                        <div className="relative group">
-                            <div className="cursor-pointer hover:text-fpt-orange transition-colors flex items-center gap-2">
-                                <i className="fa-solid fa-circle-user text-2xl"></i>
-                                <div className="hidden lg:block">
-                                    {/* FIX: Kiểm tra user.email tồn tại trước khi split */}
-                                    <p className="text-sm font-medium">
-                                        {user.email ? user.email.split('@')[0] : 'User'}
-                                    </p>
-                                    {user.role === 'admin' && (
-                                        <p className="text-xs text-fpt-orange">Admin</p>
-                                    )}
-                                </div>
-                            </div>
-                            
-                            {/* Dropdown Menu */}
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    {/* User Menu with Hover */}
+                    <div className="relative group">
+                        <div className="cursor-pointer hover:text-fpt-orange transition-colors flex items-center gap-2">
+                            <CircleUserRound size={28} />
+                        </div>
+                        
+                        {/* Dropdown Menu - Hiện khi hover */}
+                        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-20">
+                            {user ? (
                                 <div className="py-2">
-                                    <div className="px-4 py-2 border-b border-gray-200">
+                                    {/* User Info Header */}
+                                    <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-fpt-orange/10 to-fpt-blue/10">
                                         <p className="text-sm font-semibold text-gray-800 truncate">
-                                            {user.email || 'User'}
+                                            Xin chào,
                                         </p>
-                                        <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                                        <p className="text-base font-bold text-fpt-orange truncate">
+                                            {user.email ? user.email.split('@')[0] : 'User'}
+                                        </p>
+                                        {user.role === 'admin' && (
+                                            <span className="inline-block mt-1 px-2 py-0.5 bg-fpt-orange text-white text-xs rounded-full">
+                                                Admin
+                                            </span>
+                                        )}
                                     </div>
+                                    
+                                    {/* Menu Items */}
                                     <button
                                         onClick={handleProfile}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
                                     >
-                                        <i className="fa-solid fa-user"></i>
-                                        Tài khoản
+                                        <CircleUserRound size={18} className="text-fpt-orange" />
+                                        <span className="font-medium">Thông tin tài khoản</span>
                                     </button>
+                                    
+                                    <button
+                                        onClick={handleMyLocations}
+                                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                                    >
+                                        <MapPin size={18} className="text-fpt-orange" />
+                                        <span className="font-medium">Địa chỉ của tôi</span>
+                                    </button>
+                                    
+                                    <button
+                                        onClick={handleOrderHistory}
+                                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                                    >
+                                        <ShoppingBag size={18} className="text-fpt-orange" />
+                                        <span className="font-medium">Lịch sử đơn hàng</span>
+                                    </button>
+                                    
                                     {user.role === 'admin' && (
                                         <button
                                             onClick={() => navigate('/admin/category')}
-                                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                                            className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 border-t border-gray-200"
                                         >
-                                            <i className="fa-solid fa-gauge"></i>
-                                            Quản trị
+                                            <i className="fa-solid fa-gauge text-fpt-orange"></i>
+                                            <span className="font-medium">Trang quản trị</span>
                                         </button>
                                     )}
+                                    
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2 border-t border-gray-200"
+                                        className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3 border-t border-gray-200"
                                     >
-                                        <i className="fa-solid fa-right-from-bracket"></i>
-                                        Đăng xuất
+                                        <LogOut size={18} />
+                                        <span className="font-medium">Đăng xuất</span>
                                     </button>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="py-2">
+                                    {/* Welcome Header */}
+                                    <div className="px-4 py-3 border-b border-gray-200 bg-gradient-to-r from-fpt-orange/10 to-fpt-blue/10">
+                                        <p className="text-sm text-gray-600">Chào mừng bạn đến,</p>
+                                        <p className="text-base font-bold text-fpt-orange">FPT Store</p>
+                                    </div>
+                                    
+                                    {/* Login & Register Buttons */}
+                                    <button
+                                        onClick={handleLogin}
+                                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                                    >
+                                        <LogIn size={18} className="text-fpt-orange" />
+                                        <span className="font-medium">Đăng nhập</span>
+                                    </button>
+                                    
+                                    <button
+                                        onClick={handleRegister}
+                                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                                    >
+                                        <UserPlus size={18} className="text-fpt-orange" />
+                                        <span className="font-medium">Đăng ký</span>
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <button
-                            onClick={handleLogin}
-                            className="cursor-pointer hover:text-fpt-orange transition-colors flex items-center gap-2"
-                        >
-                            <i className="fa-solid fa-right-to-bracket text-xl"></i>
-                            <span className="text-sm font-medium">Đăng nhập</span>
-                        </button>
-                    )}
+                    </div>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -163,14 +233,21 @@ const Header: React.FC = () => {
             {isMenuOpen && (
                 <div className="md:hidden bg-fpt-blue border-t border-blue-600 animate-fadeIn w-full">
                     <div className="w-full px-4 py-4 space-y-4 max-w-[1920px] mx-auto">
-                        <div className="relative">
+                        <form onSubmit={handleSearch} className="relative">
                             <input
                                 type="text"
+                                value={searchQuery}
+                                onChange={handleSearchInputChange}
                                 placeholder="Tìm kiếm..."
                                 className="w-full pl-10 pr-4 py-2.5 rounded-full bg-white border-none outline-none focus:ring-2 focus:ring-fpt-orange text-sm"
                             />
-                            <i className="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
-                        </div>
+                            <button
+                                type="submit"
+                                className="absolute left-3.5 top-3 text-gray-400"
+                            >
+                                <i className="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </form>
                         
                         {user && (
                             <div className="bg-white/10 rounded-lg p-3 text-white">
@@ -181,45 +258,55 @@ const Header: React.FC = () => {
                             </div>
                         )}
                         
-                        <div className="flex items-center justify-around text-white pt-2">
-                            <div className="flex flex-col items-center space-y-1 cursor-pointer hover:text-fpt-orange transition">
-                                <i className="fa-solid fa-globe text-xl"></i>
-                                <span className="text-xs">Ngôn ngữ</span>
-                            </div>
-                            <div className="flex flex-col items-center space-y-1 cursor-pointer hover:text-fpt-orange transition relative">
-                                <i className="fa-solid fa-cart-shopping text-xl"></i>
-                                <span className="text-xs">Giỏ hàng</span>
-                                {cartCount > 0 && (
-                                    <span className="absolute -top-1 right-6 bg-fpt-orange text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                        {cartCount}
-                                    </span>
-                                )}
-                            </div>
+                        <div className="grid grid-cols-2 gap-3 text-white pt-2">
                             {user ? (
                                 <>
                                     <div 
                                         onClick={handleProfile}
-                                        className="flex flex-col items-center space-y-1 cursor-pointer hover:text-fpt-orange transition"
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-fpt-orange transition bg-white/10 rounded-lg p-3"
                                     >
-                                        <i className="fa-solid fa-circle-user text-xl"></i>
-                                        <span className="text-xs">Tài khoản</span>
+                                        <CircleUserRound size={24} />
+                                        <span className="text-xs font-medium">Tài khoản</span>
+                                    </div>
+                                    <div 
+                                        onClick={handleMyLocations}
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-fpt-orange transition bg-white/10 rounded-lg p-3"
+                                    >
+                                        <MapPin size={24} />
+                                        <span className="text-xs font-medium">Địa chỉ</span>
+                                    </div>
+                                    <div 
+                                        onClick={handleOrderHistory}
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-fpt-orange transition bg-white/10 rounded-lg p-3"
+                                    >
+                                        <ShoppingBag size={24} />
+                                        <span className="text-xs font-medium">Đơn hàng</span>
                                     </div>
                                     <div 
                                         onClick={handleLogout}
-                                        className="flex flex-col items-center space-y-1 cursor-pointer hover:text-red-400 transition"
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-red-400 transition bg-white/10 rounded-lg p-3"
                                     >
-                                        <i className="fa-solid fa-right-from-bracket text-xl"></i>
-                                        <span className="text-xs">Đăng xuất</span>
+                                        <LogOut size={24} />
+                                        <span className="text-xs font-medium">Đăng xuất</span>
                                     </div>
                                 </>
                             ) : (
-                                <div 
-                                    onClick={handleLogin}
-                                    className="flex flex-col items-center space-y-1 cursor-pointer hover:text-fpt-orange transition"
-                                >
-                                    <i className="fa-solid fa-right-to-bracket text-xl"></i>
-                                    <span className="text-xs">Đăng nhập</span>
-                                </div>
+                                <>
+                                    <div 
+                                        onClick={handleLogin}
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-fpt-orange transition bg-white/10 rounded-lg p-3"
+                                    >
+                                        <LogIn size={24} />
+                                        <span className="text-xs font-medium">Đăng nhập</span>
+                                    </div>
+                                    <div 
+                                        onClick={handleRegister}
+                                        className="flex flex-col items-center space-y-2 cursor-pointer hover:text-fpt-orange transition bg-white/10 rounded-lg p-3"
+                                    >
+                                        <UserPlus size={24} />
+                                        <span className="text-xs font-medium">Đăng ký</span>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>

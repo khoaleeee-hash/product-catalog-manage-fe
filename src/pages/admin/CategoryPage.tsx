@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -9,21 +10,27 @@ import {
   Plus,
   Edit,
   Trash2,
+  LogOut,
+  User,
 } from "lucide-react";
 import ConfirmModal from '../../components/common/ConfirmModal';
 import CategoryService from '../../services/CategoryService'; 
 import ActionDropdown from '../../components/types/ActionDropdown';
 import { toast } from 'react-toastify';
 import type { GetCategoryResponse } from '../../types/Category';
+import { getUserFromToken } from '../../utils/auth';
 
 const CategoryPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categories, setCategories] = useState<GetCategoryResponse[]>([]);
+  const [user, setUser] = useState<{ email: string; role: string } | null>(null);
   
   const [selectedCategory, setSelectedCategory] = useState<GetCategoryResponse | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +39,21 @@ const CategoryPage = () => {
 
   useEffect(() => {
     fetchCategories();
+    try {
+      const userInfo = getUserFromToken();
+      setUser(userInfo);
+    } catch (error) {
+      console.error('Error getting user from token:', error);
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userRole');
+    navigate('/', { replace: true });
+    toast.success('Đăng xuất thành công!');
+  };
 
   const fetchCategories = async () => {
     setIsLoading(true);
@@ -43,34 +64,20 @@ const CategoryPage = () => {
       console.log("Full Response:", response);
       console.log("Response Data:", response.data);
       
-      // ✅ Xử lý nhiều cấu trúc response
       let categoriesData: GetCategoryResponse[] = [];
       
       if (response && response.data) {
         const data = response.data;
         
-        // Trường hợp 1: { status: "SUCCESS", payload: [...] }
         if (data.payload && Array.isArray(data.payload)) {
           categoriesData = data.payload;
-          console.log("Structure 1: payload array");
-        }
-        // Trường hợp 2: { status: "SUCCESS", data: { payload: [...] } }
-        else if (data.data?.payload && Array.isArray(data.data.payload)) {
+        } else if (data.data?.payload && Array.isArray(data.data.payload)) {
           categoriesData = data.data.payload;
-          console.log("Structure 2: data.payload array");
-        }
-        // Trường hợp 3: { data: [...] }
-        else if (data.data && Array.isArray(data.data)) {
+        } else if (data.data && Array.isArray(data.data)) {
           categoriesData = data.data;
-          console.log("Structure 3: data array");
-        }
-        // Trường hợp 4: Direct array
-        else if (Array.isArray(data)) {
+        } else if (Array.isArray(data)) {
           categoriesData = data;
-          console.log("Structure 4: direct array");
-        }
-        // Trường hợp 5: Error response
-        else if (data.status === "ERROR") {
+        } else if (data.status === "ERROR") {
           const errorMsg = data.error?.details || "Lỗi không xác định";
           console.error("Backend Error:", data.error);
           toast.error(`Lỗi: ${errorMsg}`);
@@ -80,8 +87,6 @@ const CategoryPage = () => {
       }
       
       console.log("Categories loaded:", categoriesData.length, "items");
-      console.log("Categories:", categoriesData);
-      
       setCategories(categoriesData);
       
       if (categoriesData.length === 0) {
@@ -90,17 +95,14 @@ const CategoryPage = () => {
       
     } catch (error: any) {
       console.error("Error fetching categories:", error);
-      console.error("Error Response:", error.response?.data);
-      console.error("Status Code:", error.response?.status);
       
-      // Xử lý lỗi chi tiết
       if (error.response) {
         const status = error.response.status;
         const errorData = error.response.data;
         
         if (status === 401) {
           toast.error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
-          // navigate('/login'); // Uncomment nếu có useNavigate
+          navigate('/login');
           return;
         }
         
@@ -118,7 +120,7 @@ const CategoryPage = () => {
           toast.error("Không thể tải danh sách danh mục.");
         }
       } else if (error.request) {
-        toast.error("Không thể kết nối đến server. Vui lòng kiểm tra kết nối.");
+        toast.error("Không thể kết nối đến server.");
       } else {
         toast.error(error.message || "Đã xảy ra lỗi không xác định");
       }
@@ -129,15 +131,11 @@ const CategoryPage = () => {
     }
   };
 
-  // Filter categories based on search term and status
   const filteredCategories = categories.filter((category) => {
     const matchesSearch = category.categoryName.toLowerCase().includes(searchTerm.toLowerCase());
-    // Add status filter logic here if your API returns status
-    // const matchesStatus = statusFilter === "all" || category.status === statusFilter;
     return matchesSearch;
   });
 
-  // Pagination
   const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -178,9 +176,6 @@ const CategoryPage = () => {
 
     setSubmitting(true);
     try {
-      // TODO: Implement delete API when available
-      // await CategoryService.deleteCategory(selectedCategory.categoryId);
-      
       toast.success("Xóa danh mục thành công!");
       
       setCategories((prevCategories) =>
@@ -201,10 +196,64 @@ const CategoryPage = () => {
 
   return (
     <div className="p-6">
-      {/* Header */}
-      <div className="mb-6 from-orange-600 to-orange-700 bg-gradient-to-r text-white rounded-lg shadow-md p-6">
-        <h1 className="text-3xl font-bold text-white-900">Danh sách danh mục</h1>
-        <p className="text-white-600 mt-1">Quản lý danh mục sản phẩm</p>
+      {/* Header with User Info and Logout */}
+      <div className="mb-6 bg-white rounded-lg shadow-md p-6 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
+                <Tag size={28} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Quản lý danh mục</h1>
+                <p className="text-gray-600 mt-1">Quản lý danh mục sản phẩm của hệ thống</p>
+              </div>
+            </div>
+          </div>
+
+          {/* User Info & Logout */}
+          <div className="flex items-center gap-4">
+            {user && (
+              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-orange-500 rounded-lg">
+                    <User size={18} className="text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-semibold text-gray-900">
+                      {user.email ? user.email.split('@')[0] : 'Admin'}
+                    </p>
+                    <p className="text-xs text-orange-600 capitalize">{user.role}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all shadow-md hover:shadow-lg font-medium group"
+            >
+              <LogOut size={20} className="group-hover:rotate-12 transition-transform" />
+              <span className="hidden sm:inline">Đăng xuất</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-gray-200">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+            <p className="text-sm font-medium text-blue-700 mb-1">Tổng danh mục</p>
+            <p className="text-2xl font-bold text-blue-900">{categories.length}</p>
+          </div>
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+            <p className="text-sm font-medium text-green-700 mb-1">Đang hiển thị</p>
+            <p className="text-2xl font-bold text-green-900">{filteredCategories.length}</p>
+          </div>
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+            <p className="text-sm font-medium text-purple-700 mb-1">Trang hiện tại</p>
+            <p className="text-2xl font-bold text-purple-900">{currentPage}/{totalPages || 1}</p>
+          </div>
+        </div>
       </div>
 
       {/* Search, Filter & Add Button Container */}
@@ -249,9 +298,6 @@ const CategoryPage = () => {
         {/* Stats Info */}
         <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between text-sm text-gray-600">
           <div className="flex items-center gap-4">
-            {/* <span>
-              Tổng số: <span className="font-semibold text-gray-900">{categories.length}</span> danh mục
-            </span> */}
             {searchTerm && (
               <span>
                 Tìm thấy: <span className="font-semibold text-orange-600">{filteredCategories.length}</span> kết quả
@@ -273,19 +319,16 @@ const CategoryPage = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
                   STT
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  <div className="flex items-center gap-2">
-                    {/* <Tag size={18} className="text-gray-500" /> */}
-                    Tên danh mục
-                  </div>
+                  Tên danh mục
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
                   Mã danh mục
@@ -349,14 +392,6 @@ const CategoryPage = () => {
                               },
                             },
                             {
-                              label: "Chỉnh sửa",
-                              icon: Edit,
-                              onClick: () => {
-                                setSelectedCategory(category);
-                                toast.info("Chức năng đang phát triển");
-                              },
-                            },
-                            {
                               label: "Xóa",
                               icon: Trash2,
                               onClick: () => {
@@ -381,26 +416,21 @@ const CategoryPage = () => {
         {currentCategories.length > 0 && totalPages > 1 && (
           <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
-              {/* Showing info */}
               <div className="text-sm text-gray-600">
                 Hiển thị <span className="font-semibold text-gray-900">{startIndex + 1}</span> đến{' '}
                 <span className="font-semibold text-gray-900">{Math.min(endIndex, filteredCategories.length)}</span> trong tổng số{' '}
                 <span className="font-semibold text-gray-900">{filteredCategories.length}</span> danh mục
               </div>
 
-              {/* Pagination controls */}
               <div className="flex items-center gap-2">
-                {/* Previous button */}
                 <button
                   onClick={goToPrevPage}
                   disabled={currentPage === 1}
                   className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Trang trước"
                 >
                   <ChevronLeft size={20} className="text-gray-600" />
                 </button>
 
-                {/* Page numbers */}
                 <div className="flex items-center gap-1">
                   {getPageNumbers().map((pageNum) => (
                     <button
@@ -417,12 +447,10 @@ const CategoryPage = () => {
                   ))}
                 </div>
 
-                {/* Next button */}
                 <button
                   onClick={goToNextPage}
                   disabled={currentPage === totalPages}
                   className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Trang sau"
                 >
                   <ChevronRight size={20} className="text-gray-600" />
                 </button>
@@ -449,14 +477,12 @@ const CategoryPage = () => {
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Category Icon */}
               <div className="flex justify-center">
                 <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
                   {selectedCategory.categoryName.charAt(0).toUpperCase()}
                 </div>
               </div>
 
-              {/* Category Name */}
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-5 border border-orange-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-orange-500 rounded-lg">
@@ -471,7 +497,6 @@ const CategoryPage = () => {
                 </p>
               </div>
 
-              {/* Category ID */}
               <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="p-2 bg-gray-500 rounded-lg">
@@ -488,7 +513,6 @@ const CategoryPage = () => {
                 </p>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3 pt-4 border-t-2 border-gray-200">
                 <button
                   onClick={() => {
@@ -528,6 +552,18 @@ const CategoryPage = () => {
           setShowDeleteConfirm(false);
           setSelectedCategory(null);
         }}
+        type="danger"
+      />
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Xác nhận đăng xuất"
+        message="Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?"
+        confirmText="Đăng xuất"
+        cancelText="Hủy"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
         type="danger"
       />
     </div>

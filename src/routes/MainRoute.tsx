@@ -9,35 +9,36 @@ import ProtectedRoute from "../auth/ProtectedRoute"; // ← Đổi tên cho đú
 import LoginPage from "../pages/LoginPage";
 import ProductDetailPage from "../pages/product/productDetailPage";
 import CreateProductPage from "../pages/admin/CreateProductPage";
+import RegisterPage from "../pages/RegisterPage";
 
 const MainRoute: React.FC = () => {
     return (
         <BrowserRouter>
-    <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+            <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
-        {/* PRODUCT DETAIL */}
-        <Route path="/products/:id" element={<ProductDetailPage />} />
+                {/* PRODUCT DETAIL */}
+                <Route path="/products/:id" element={<ProductDetailPage />} />
 
-        {/* User routes */}
-        <Route element={<UserRoute />}>
-            <Route path="/home" element={<HomePage />} />
-        </Route>
+                {/* User routes */}
+                <Route element={<UserRoute />}>
+                    <Route path="/home" element={<HomePage />} />
+                </Route>
 
-        {/* Admin routes */}
-        <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
-            <Route path="/admin" element={<AdminRoute />}>
-                <Route index element={<Navigate to="/admin/category" replace />} />
-                <Route path="category" element={<CategoryPage />} />
-                <Route path="product" element={<ProductPage />} />
-                <Route path="products/createProduct" element={<CreateProductPage />} />
-            </Route>
-        </Route>
-    </Routes>
-</BrowserRouter>
-
+                {/* Admin routes */}
+                <Route element={<ProtectedRoute role={["admin", "ADMIN"]} />}>
+                    <Route path="/admin" element={<AdminRoute />}>
+                        <Route index element={<Navigate to="/admin/category" replace />} />
+                        <Route path="category" element={<CategoryPage />} />
+                        <Route path="product" element={<ProductPage />} />
+                        <Route path="products/createProduct" element={<CreateProductPage />} />
+                    </Route>
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 };
 
