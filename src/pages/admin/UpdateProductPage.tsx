@@ -25,7 +25,7 @@ const ProductEditPage = () => {
     try {
       const productRes = await getProductById(Number(id));
       setProduct(productRes);
-      setImagePreview(productRes.imageUrl);
+      setImagePreview(productRes?.imageUrl || "");
 
       const categoriesRes = await CategoryService.getCategories();
       setCategories(categoriesRes.data.payload);
