@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getUserFromToken } from '../../utils/auth';
 import { CircleUserRound, LogOut, UserPlus, LogIn, MapPin, ShoppingBag } from 'lucide-react';
 
@@ -9,6 +9,7 @@ const Header: React.FC = () => {
     const [cartCount] = useState(3);
     const [user, setUser] = useState<{ email: string; role: 'user' | 'admin' } | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         try {
@@ -20,6 +21,17 @@ const Header: React.FC = () => {
             setUser(null);
         }
     }, []);
+
+    // Keep search keyword when on search page
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const q = params.get('q');
+        if (q) {
+            setSearchQuery(q);
+        } else {
+            setSearchQuery('');
+        }
+    }, [location.search]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');

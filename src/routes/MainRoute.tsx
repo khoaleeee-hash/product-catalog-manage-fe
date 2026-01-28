@@ -11,6 +11,7 @@ import ProductDetailPage from "../pages/product/productDetailPage";
 import CreateProductPage from "../pages/admin/CreateProductPage";
 import UpdateProductPage from "../pages/admin/UpdateProductPage";
 import RegisterPage from "../pages/RegisterPage";
+import SearchPage from "../pages/search/SearchPage";
 
 const MainRoute: React.FC = () => {
     return (
@@ -18,6 +19,7 @@ const MainRoute: React.FC = () => {
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 

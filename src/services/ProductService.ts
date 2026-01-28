@@ -62,3 +62,18 @@ export const updateProduct = async (
   return res.data.payload;
 };
 
+export const searchProducts = async (keyword: string): Promise<Product[]> => {
+    try {
+        const response = await axios.get<Product[]>('/api/products/search', {
+            params: {
+                keyword: keyword.trim()
+            }
+        });
+        return response.data; // ✅ array trực tiếp
+    } catch (error) {
+        console.error('Error searching products:', error);
+        return [];
+    }
+};
+
+
