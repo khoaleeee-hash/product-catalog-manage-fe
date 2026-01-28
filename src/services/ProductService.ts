@@ -69,7 +69,7 @@ export const searchProducts = async (keyword: string): Promise<Product[]> => {
                 keyword: keyword.trim()
             }
         });
-        return response.data; // ✅ array trực tiếp
+        return response.data; 
     } catch (error) {
         console.error('Error searching products:', error);
         return [];
