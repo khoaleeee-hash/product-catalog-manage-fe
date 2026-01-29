@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FPTLogo from '../assets/fpt_logo.png';
-import userService from '../services/userService'; // ✅ Fix: lowercase 'u'
+import userService from '../services/userService';
 import type { RegisterRequest } from '../types/User';
 import { toast } from 'react-toastify';
 
@@ -17,7 +17,7 @@ const RegisterPage: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loading, setLoading] = useState(false); // ✅ State name is 'loading'
+    const [loading, setLoading] = useState(false); 
     const [error, setError] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -73,7 +73,7 @@ const RegisterPage: React.FC = () => {
             return;
         }
 
-        setLoading(true); // ✅ Fix: Use setLoading instead of setIsLoading
+        setLoading(true); 
 
         try {
             const registerData: RegisterRequest = {
@@ -131,7 +131,7 @@ const RegisterPage: React.FC = () => {
             setError(errorMsg);
             toast.error(errorMsg);
         } finally {
-            setLoading(false); // ✅ Fix: Use setLoading
+            setLoading(false); 
         }
     };
 
