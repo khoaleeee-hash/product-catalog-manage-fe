@@ -65,6 +65,10 @@ const Header: React.FC = () => {
         navigate('/locations');
     };
 
+    const handleCart = () => {
+        navigate('/cart');
+    };
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
@@ -125,7 +129,10 @@ const Header: React.FC = () => {
                         <i className="fa-solid fa-globe"></i>
                         <span className="text-sm font-medium">VN</span>
                     </div>
-                    <div className="relative cursor-pointer hover:text-fpt-orange transition-colors group">
+                    <div 
+                        onClick={handleCart}
+                        className="relative cursor-pointer hover:text-fpt-orange transition-colors group"
+                    >
                         <i className="fa-solid fa-cart-shopping text-xl"></i>
                         {cartCount > 0 && (
                             <span className="absolute -top-2 -right-2 bg-fpt-orange text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-fpt-blue group-hover:scale-110 transition-transform">
@@ -168,13 +175,13 @@ const Header: React.FC = () => {
                                         <span className="font-medium">Thông tin tài khoản</span>
                                     </button>
                                     
-                                    <button
+                                    {/* <button
                                         onClick={handleMyLocations}
                                         className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3"
                                     >
                                         <MapPin size={18} className="text-fpt-orange" />
                                         <span className="font-medium">Địa chỉ của tôi</span>
-                                    </button>
+                                    </button> */}
                                     
                                     <button
                                         onClick={handleOrderHistory}

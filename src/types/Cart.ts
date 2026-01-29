@@ -1,12 +1,18 @@
 import type { Product } from "./Product";
 
-export interface CartItem {
+export interface CartResponse {
   id: number;
-  product: Product;
-  quantity: number;
+  user: {
+    id: number;
+    fullName: string;
+    email: string;
+    role: string;
+  };
+  items: CartItem[];
 }
 
-export interface Cart {
+export interface CartItem {
   id: number;
-  items: CartItem[];
+  quantity: number;
+  product: Product;
 }

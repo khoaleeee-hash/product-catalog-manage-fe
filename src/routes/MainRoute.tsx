@@ -12,6 +12,7 @@ import CreateProductPage from "../pages/admin/CreateProductPage";
 import UpdateProductPage from "../pages/admin/UpdateProductPage";
 import RegisterPage from "../pages/RegisterPage";
 import SearchPage from "../pages/search/SearchPage";
+import CartPage from "../pages/home/CartPage";
 
 const MainRoute: React.FC = () => {
     return (
@@ -29,6 +30,7 @@ const MainRoute: React.FC = () => {
                 {/* User routes */}
                 <Route element={<UserRoute />}>
                     <Route path="/home" element={<HomePage />} />
+                    <Route path="/cart" element={<CartPage />} />
                 </Route>
 
         {/* Admin routes */}
