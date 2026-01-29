@@ -31,7 +31,7 @@ const Banner: React.FC = () => {
                 <div className="md:w-1/2 h-64 md:h-80 bg-gray-200 flex items-center justify-center overflow-hidden relative">
                     <div className="absolute inset-0 bg-gradient-to-t from-fpt-blue/20 to-transparent z-10"></div>
                     <img
-                        src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                        src="https://static.fireant.vn/Upload/20240126/images/-3370-1706169772.jpg"
                         alt="Banner Ưu đãi"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />

@@ -12,12 +12,12 @@ interface MenuItem {
 }
 
 const adminMenuItems: MenuItem[] = [
-  {
-    id: 'dashboard',
-    label: 'Quản lý người dùng',
-    icon: <LayoutDashboard size={20} />,
-    path: '/admin/dashboard',
-  },
+  // {
+  //   id: 'dashboard',
+  //   label: 'Quản lý người dùng',
+  //   icon: <LayoutDashboard size={20} />,
+  //   path: '/admin/dashboard',
+  // },
   {
     id: 'category',
     label: 'Quản lý danh mục',
