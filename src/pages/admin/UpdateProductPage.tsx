@@ -4,6 +4,7 @@ import type { Product } from "../../types/Product";
 import type { GetCategoryResponse } from "../../types/Category";
 import { getProductById, updateProduct } from "../../services/ProductService";
 import CategoryService from "../../services/CategoryService";
+import { resolveImageUrl } from "../../utils/image";
 import "./ProductForm.css";
 
 const ProductEditPage = () => {
@@ -25,7 +26,7 @@ const ProductEditPage = () => {
     try {
       const productRes = await getProductById(Number(id));
       setProduct(productRes);
-      setImagePreview(productRes?.imageUrl || "");
+      setImagePreview(resolveImageUrl(productRes?.imageUrl || ""));
 
       const categoriesRes = await CategoryService.getCategories();
       setCategories(categoriesRes.data.payload || []);
