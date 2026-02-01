@@ -36,11 +36,8 @@ const RegisterPage: React.FC = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
+    const validateForm = () =>{
 
-        // Validation
         if (!formData.fullName.trim()) {
             setError('Vui lòng nhập họ tên');
             return;
@@ -72,68 +69,71 @@ const RegisterPage: React.FC = () => {
             setError('Vui lòng nhập địa chỉ');
             return;
         }
+        return null;
+    }
 
-        setLoading(true); 
+    const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        try {
-            const registerData: RegisterRequest = {
-                fullName: formData.fullName.trim(),
-                email: formData.email.trim(),
-                password: formData.password,
-                phone: formData.phone.trim(),
-                address: formData.address.trim(),
-            };
+    // 1️⃣ FE validate
+    const errorMsg = validateForm();
+    if (errorMsg) {
+        setError(errorMsg);
+        return;
+    }
 
-            console.log('Sending register data:', registerData);
+    setLoading(true);
+    setError("");
 
-            const response = await userService.register(registerData);
+    try {
+        const registerData: RegisterRequest = {
+            fullName: formData.fullName.trim(),
+            email: formData.email.trim(),
+            password: formData.password,
+            phone: formData.phone.trim(),
+            address: formData.address.trim(),
+        };
 
-            console.log('Full response:', response);
-            console.log('Response data:', response.data);
-            console.log('Response status:', response.data.status);
-            console.log('Response payload:', response.data.payload);
+        const response = await userService.register(registerData);
 
-            // ✅ Kiểm tra status === "SUCCESS"
-            if (response.data.status === "SUCCESS" && response.data.payload) {
-                toast.success('Đăng ký thành công! Đang chuyển đến trang đăng nhập...');
-                
-                // Clear form
-                setFormData({
-                    fullName: '',
-                    phone: '',
-                    address: '',
-                    email: '',
-                    password: ''
-                });
-                setConfirmPassword('');
-                
-                setTimeout(() => {
-                    navigate('/login');
-                }, 1500);
-            } else {
-                const errorMsg = response.data.error?.details || 'Đăng ký thất bại';
-                setError(errorMsg);
-                toast.error(errorMsg);
-            }
-        } catch (error: any) {
-            console.error('Register error:', error);
-            
-            let errorMsg = 'Đăng ký thất bại. Vui lòng thử lại!';
-            
-            if (error.response?.data?.error?.details) {
-                errorMsg = error.response.data.error.details;
-            } else if (error.response?.data?.message) {
-                errorMsg = error.response.data.message;
-            } else if (error.message) {
-                errorMsg = error.message;
-            }
-            
-            setError(errorMsg);
-            toast.error(errorMsg);
-        } finally {
-            setLoading(false); 
-        }
-    };
+        // 2️⃣ Success chỉ kiểm tra SUCCESS
+        if (response.data?.status === "SUCCESS") {
+            toast.success("Đăng ký thành công! Đang chuyển đến trang đăng nhập...");
+
+            setFormData({
+                fullName: "",
+                phone: "",
+                address: "",
+                email: "",
+                password: ""
+            });
+            setConfirmPassword("");
+
+            setTimeout(() => {
+                navigate("/login");
+            }, 1500);
+        } 
+
+    }catch (err: any) {
+    console.error("Register error:", err);
+
+    let msg = "Đăng ký thất bại. Vui lòng thử!";
+
+    const errorData = err?.response?.data;
+    const errorCode = errorData?.error?.code;
+
+    // ✅ BẮT ĐÚNG LỖI TẠI ĐÂY
+    if (errorCode === "INTERNAL_SERVER_ERROR") {
+        msg = "Email hoặc số điện thoại đã tồn tại";
+    }
+
+    setError(msg);
+    toast.error(msg);
+} finally {
+        setLoading(false);
+    }
+};
+
 
     return (
         <div className="bg-gradient-to-br from-blue-50 via-orange-50 to-green-50 flex items-center justify-center min-h-screen font-sans py-6 px-4">
