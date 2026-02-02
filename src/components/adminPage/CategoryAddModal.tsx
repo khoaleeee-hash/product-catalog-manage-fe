@@ -6,9 +6,15 @@ interface Props {
 	open: boolean
 	onClose: () => void
 	onCreate: (data: CreateCategoryRequest) => Promise<void> | void
+	existingNames: string[]
 }
 
-const CategoryAddModal: React.FC<Props> = ({ open, onClose, onCreate }) => {
+const CategoryAddModal: React.FC<Props> = ({
+	open,
+	onClose,
+	onCreate,
+	existingNames
+}) => {
 	const [categoryName, setCategoryName] = useState('')
 	const [error, setError] = useState('')
 	const firstRef = useRef<HTMLInputElement | null>(null)
@@ -29,19 +35,48 @@ const CategoryAddModal: React.FC<Props> = ({ open, onClose, onCreate }) => {
 		return () => window.removeEventListener('keydown', onKey)
 	}, [open, onClose])
 
+	
+	const handleChange = (value: string) => {
+		setCategoryName(value)
+
+		if (!value.trim()) {
+			setError('Tên danh mục là bắt buộc')
+			return
+		}
+
+		const isDuplicate = existingNames.some(
+			name => name.toLowerCase() === value.trim().toLowerCase()
+		)
+
+		if (isDuplicate) {
+			setError('Tên này đã tồn tại')
+		} else {
+			setError('')
+		}
+	}
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
+
 		if (!categoryName.trim()) {
 			setError('Tên danh mục là bắt buộc')
 			firstRef.current?.focus()
 			return
 		}
 
+		if (error) return 
+
 		try {
 			await onCreate({ categoryName: categoryName.trim() })
 			onClose()
 		} catch (err: any) {
-			setError(err?.message || 'Lỗi khi tạo danh mục')
+			// fallback nếu backend trả lỗi
+			const msg =
+				err?.response?.data?.error?.data ||
+				err?.code ||
+				'Lỗi khi tạo danh mục'
+
+			setError(msg)
 		}
 	}
 
@@ -64,26 +99,45 @@ const CategoryAddModal: React.FC<Props> = ({ open, onClose, onCreate }) => {
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
-						<label className="block text-sm font-medium mb-1">Tên danh mục <span className="text-red-500">*</span></label>
+						<label className="block text-sm font-medium mb-1">
+							Tên danh mục <span className="text-red-500">*</span>
+						</label>
 						<input
 							ref={firstRef}
-						value={categoryName}
-						onChange={(e) => setCategoryName(e.target.value)}
-						className="w-full border border-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-						placeholder="Nhập tên danh mục"
-					/>
-				</div>
+							value={categoryName}
+							onChange={(e) => handleChange(e.target.value)}
+							className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
+								error
+									? 'border-red-400 focus:ring-red-300'
+									: 'border-gray-200 focus:ring-blue-300'
+							}`}
+							placeholder="Nhập tên danh mục"
+						/>
+					</div>
 
-				{error && <p className="text-sm text-red-600">{error}</p>}
+					{error && <p className="text-sm text-red-600">{error}</p>}
 
 					<div className="flex justify-end gap-2">
-						<button type="button" onClick={onClose} className="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700">Hủy</button>
-						<button type="submit" className="px-4 py-2 rounded bg-orange-600 text-white hover:bg-orange-700">Tạo</button>
+						<button
+							type="button"
+							onClick={onClose}
+							className="px-3 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+						>
+							Hủy
+						</button>
+						<button
+							type="submit"
+							disabled={!!error}
+							className="px-4 py-2 rounded bg-orange-600 text-white hover:bg-orange-700 disabled:opacity-50"
+						>
+							Tạo
+						</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	)
 }
+
 
 export default CategoryAddModal

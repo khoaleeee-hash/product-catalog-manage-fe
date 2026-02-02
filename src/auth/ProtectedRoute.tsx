@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { isAuthenticated, getUserFromToken } from "../utils/auth";
 
 interface ProtectedRouteProps {
     role: string[];
@@ -6,17 +7,23 @@ interface ProtectedRouteProps {
 
 const ProctedRouted: React.FC<ProtectedRouteProps> = ({ role }) => {
     // TODO: Implement real authentication check
-    const isAuthenticated = true; // Tạm thời để true để test
-    const userRole = "admin"; // Tạm thời để admin để test
+
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />;
     }
+    const user = getUserFromToken();
 
-    if (!role.includes(userRole)) {
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    // 2️⃣ Sai role → home
+    if (!role.includes(user.role)) {
         return <Navigate to="/home" replace />;
     }
 
+    // 3️⃣ OK → cho vào
     return <Outlet />;
 };
 

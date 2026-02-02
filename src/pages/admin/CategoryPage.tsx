@@ -625,6 +625,7 @@ const CategoryPage = () => {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onCreate={handleCreateCategory}
+        existingNames={categories.map(c => c.categoryName)}
       />
 
       {/* Edit Category Modal */}
@@ -636,6 +637,7 @@ const CategoryPage = () => {
         }}
         onUpdate={handleUpdateCategory}
         category={selectedCategory}
+        existingCategories={categories}
       />
     </div>
   );
