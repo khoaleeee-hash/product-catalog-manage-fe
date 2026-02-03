@@ -4,7 +4,7 @@ import type { CartResponse } from "../types/Cart";
 
 export const addToCart = (productId: number, quantity: number = 1) => {
   return axios.post(
-    "http://localhost:8080/api/cart/add",
+    "/api/cart/add",
     null,
     {
       params: {
@@ -22,7 +22,7 @@ export const getCart = () => {
   const token = localStorage.getItem("accessToken");
 
   return axios.get<ApiResponse<CartResponse>>(
-    "http://localhost:8080/api/cart",
+    "/api/cart",
     {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -8,7 +8,7 @@ import axios from "../api/axios";
 // };
 
 export const getProducts = async (): Promise<Product[]> => {
-  const res = await fetch("http://localhost:8080/api/products");
+  const res = await fetch("/api/products");
   const json = await res.json();
   return json.payload; 
 };

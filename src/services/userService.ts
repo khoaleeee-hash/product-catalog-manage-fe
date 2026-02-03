@@ -2,7 +2,7 @@ import { type RegisterRequest, type RegisterResponse, type UserResponse } from "
 import axios, { type AxiosResponse } from "axios";
 import { apiUtils } from "../api/axios"; 
 import type { ApiResponse } from "../types/ApiResponse"; 
-const USER_URL = "http://localhost:8080/api/user";
+const USER_URL = "/api/user";
 
 const userService = {
     async login(
