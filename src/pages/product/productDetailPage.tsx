@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Product } from '../../types/Product';
 import { getProductById } from '../../services/ProductService';
-import './ProductDetailPage.css';
+import './productDetailPage.css';
 import { resolveImageUrl } from '../../utils/image';
 
 
