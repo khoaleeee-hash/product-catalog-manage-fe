@@ -1,14 +1,13 @@
 @import '@fortawesome/fontawesome-free/css/all.min.css';
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import "tailwindcss";
 
-@theme {
+:root {
   --color-fpt-orange: #F37021;
   --color-fpt-blue: #0054A5;
   --color-fpt-green: #00A859;
   --color-fpt-gray: #F3F4F6;
-}
-
-:root {
+  
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -82,12 +81,3 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #F37021;
 }
-
-@import "tailwindcss";
-  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424; */
