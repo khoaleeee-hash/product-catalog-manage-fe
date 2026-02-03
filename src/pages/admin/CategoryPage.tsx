@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
-  Filter,
   ChevronLeft,
   ChevronRight,
   Tag,
@@ -71,20 +70,12 @@ const CategoryPage = () => {
       if (response && response.data) {
         const data = response.data;
         
-        if (data.payload && Array.isArray(data.payload)) {
-          categoriesData = data.payload;
-        } else if (data.data?.payload && Array.isArray(data.data.payload)) {
-          categoriesData = data.data.payload;
-        } else if (data.data && Array.isArray(data.data)) {
-          categoriesData = data.data;
-        } else if (Array.isArray(data)) {
-          categoriesData = data;
-        } else if (data.status === "ERROR") {
+        if (data.status === "SUCCESS") {
+          setCategories(data.payload);
+        } else {
           const errorMsg = data.error?.details || "Lỗi không xác định";
-          console.error("Backend Error:", data.error);
           toast.error(`Lỗi: ${errorMsg}`);
           setCategories([]);
-          return;
         }
       }
       

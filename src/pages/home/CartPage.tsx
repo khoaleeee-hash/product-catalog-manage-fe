@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Minus, Plus, Trash2, Tag, Lock, ArrowLeft } from "lucide-react";
+import { Minus, Plus, Trash2, Tag, ArrowLeft } from "lucide-react";
 import { getCart } from "../../services/CartService";
 import type { CartResponse } from "../../types/Cart";
-import type { ApiResponse } from "../../types/ApiResponse";
 import { resolveImageUrl } from "../../utils/image";
 
 const CartPage: React.FC = () => {
@@ -37,9 +36,6 @@ const CartPage: React.FC = () => {
   }, []);
 
   const items = cart?.items ?? [];
-
-  // Tính tổng số lượng sản phẩm (bao gồm quantity)
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
