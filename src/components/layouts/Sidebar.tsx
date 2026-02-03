@@ -1,4 +1,4 @@
-import { Layers, Package, Home, ChevronRight, LayoutDashboard } from 'lucide-react';
+import { Layers, Package, Home, ChevronRight} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import FPTLogo from '../../assets/fpt_logo.png';
 

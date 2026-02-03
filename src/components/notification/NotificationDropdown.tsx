@@ -6,6 +6,12 @@ import NotificationItem from "./NotificationItem";
 import type { Notification } from "../../types/Notification";
 import { useNavigate } from "react-router-dom";
 
+// Add API response interfaces
+interface ApiResponse<T = any> {
+  data?: T | { data: T };
+  message?: string;
+}
+
 const NotificationDropdown = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +53,7 @@ const NotificationDropdown = () => {
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await notificationService.getUnreadCount();
+      const response = await notificationService.getUnreadCount() as any;
       // Handle different response structures
       const responseData = response.data?.data || response.data;
       if (responseData?.unreadCount !== undefined) {
@@ -69,12 +75,13 @@ const NotificationDropdown = () => {
       const response = await notificationService.getNotifications({
         page: 1,
         limit: 10,
-      });
+      }) as any;
 
       // Handle different response structures
       const responseData = response.data?.data || response.data;
       if (responseData) {
-        if (Array.isArray(responseData.data)) {
+        // Check if responseData has a data property that is an array
+        if ("data" in responseData && Array.isArray(responseData.data)) {
           setNotifications(responseData.data);
         } else if (Array.isArray(responseData)) {
           setNotifications(responseData);
@@ -114,11 +121,11 @@ const NotificationDropdown = () => {
 
     setMarkingAllRead(true);
     try {
-      const response = await notificationService.markAllAsRead();
+      const response = await notificationService.markAllAsRead() as ApiResponse;
       const responseData = response.data?.data || response.data;
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
-      toast.success(responseData?.message || "Đã đánh dấu tất cả đã đọc");
+      toast.success((responseData as any)?.message || "Đã đánh dấu tất cả đã đọc");
     } catch (error) {
       console.error("Failed to mark all as read:", error);
       toast.error("Không thể đánh dấu đã đọc");

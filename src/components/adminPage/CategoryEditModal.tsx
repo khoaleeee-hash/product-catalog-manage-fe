@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import type { GetCategoryResponse } from '../../types/Category'
-import { ca } from 'date-fns/locale'
 
 interface Props {
     open: boolean

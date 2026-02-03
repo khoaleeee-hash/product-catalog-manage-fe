@@ -43,13 +43,13 @@ const ProductTable: React.FC<Props> = ({ products, onDelete, onUpdate }) => {
 
                             <td>
                                 <button 
-                                onClick={()=> onDelete(p.id)}
+                                onClick={() => p.id && onDelete(p.id)}
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                                     Delete
                                 </button>
 
                                 <button
-                                onClick={() => onUpdate(p.id)}
+                                onClick={() => p.id && onUpdate(p.id)}
                                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                                     Update
                                 </button>

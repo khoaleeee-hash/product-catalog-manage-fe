@@ -1,10 +1,8 @@
-import { useState } from "react";
 import Footer from "../components/layouts/Footer";
 import Header from "../components/layouts/Header";
 import type { ManagerLayoutProp } from "../interface/ManagerLayoutProp";
 
 const ManagerLayout = ({ children }: ManagerLayoutProp) => {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="min-h-screen flex flex-col text-gray-900 overflow-x-hidden">
